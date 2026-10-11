@@ -46,6 +46,7 @@ export interface ChainStep {
     display: string;
     type: QuestionType;
     confidence: number;
+    boolean?: boolean;
     gate: GateInfo;
   };
   changed: boolean;

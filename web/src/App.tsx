@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
 import { MetaProvider } from "./lib/MetaContext";
 import Dashboard from "./pages/Dashboard";
@@ -9,7 +9,6 @@ import Batch from "./pages/Batch";
 import Ledger from "./pages/Ledger";
 import Calibration from "./pages/Calibration";
 import Methodology from "./pages/Methodology";
-import Ontology from "./pages/Ontology";
 
 export default function App() {
   return (
@@ -20,7 +19,8 @@ export default function App() {
           <Route path="/workbench" element={<Workbench />} />
           <Route path="/workbench/:bpId" element={<Workbench />} />
           <Route path="/blueprints" element={<Blueprints />} />
-          <Route path="/ontology" element={<Ontology />} />
+          {/* 本体链路已并入决策工作台 */}
+          <Route path="/ontology" element={<Navigate to="/workbench" replace />} />
           <Route path="/batch" element={<Batch />} />
           <Route path="/batch/:bpId" element={<Batch />} />
           <Route path="/ledger" element={<Ledger />} />

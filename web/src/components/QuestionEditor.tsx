@@ -13,10 +13,13 @@ export function QuestionEditor({
   questions,
   onChange,
   readOnly = false,
+  chainMode = false,
 }: {
   questions: Record<string, QuestionSpec>;
   onChange: (q: Record<string, QuestionSpec>) => void;
   readOnly?: boolean;
+  /** 开启后每个因子可以声明上游依赖与子本体作用域 */
+  chainMode?: boolean;
 }) {
   const keys = Object.keys(questions);
 
@@ -26,7 +29,16 @@ export function QuestionEditor({
   const renameKey = (oldKey: string, newKey: string) => {
     if (!newKey || newKey === oldKey) return;
     const next: Record<string, QuestionSpec> = {};
-    for (const k of keys) next[k === oldKey ? newKey : k] = questions[k];
+    for (const k of keys) {
+      const q = questions[k];
+      if (k === oldKey) {
+        next[newKey] = q;
+        continue;
+      }
+      // 重命名时同步改写别人对它的依赖，避免链路断掉
+      const deps = q.depends_on?.map((d) => (d === oldKey ? newKey : d));
+      next[k] = deps ? { ...q, depends_on: deps } : q;
+    }
     onChange(next);
   };
 
@@ -124,6 +136,15 @@ export function QuestionEditor({
               </div>
             )}
 
+            {chainMode && !readOnly && (
+              <ChainSettings
+                spec={q}
+                others={keys.filter((k) => k !== key)}
+                defaultDepth={1}
+                onChange={(p) => patch(key, p)}
+              />
+            )}
+
             {warnings.length > 0 && (
               <ul className="mt-2.5 space-y-1">
                 {warnings.map((w, i) => (
@@ -142,6 +163,86 @@ export function QuestionEditor({
           + 增加一个决策问题
         </button>
       )}
+    </div>
+  );
+}
+
+/** 链路设置：上游依赖（结论会写成图节点） + 子本体作用域（关键词 / 跳数） */
+function ChainSettings({
+  spec,
+  others,
+  defaultDepth,
+  onChange,
+}: {
+  spec: QuestionSpec;
+  others: string[];
+  defaultDepth: number;
+  onChange: (p: Partial<QuestionSpec>) => void;
+}) {
+  const deps = spec.depends_on || [];
+  const kws = (spec.scope?.keywords || []).join(", ");
+  const toggleDep = (dep: string) =>
+    onChange({
+      depends_on: deps.includes(dep) ? deps.filter((d) => d !== dep) : [...deps, dep],
+    });
+
+  return (
+    <div className="mt-2.5 rounded-lg border border-ink-600 bg-ink-800 p-2.5">
+      <div className="mb-2 flex items-center justify-between">
+        <span className="section-title">链路设置</span>
+        <span className="text-[10.5px] text-slate-600">依赖上游结论 · 只裁自己关心的子图</span>
+      </div>
+      <div className="flex flex-wrap items-center gap-1.5">
+        <span className="mr-0.5 text-[11px] text-slate-600">依赖：</span>
+        {others.length === 0 && <span className="text-[11px] text-slate-600">（没有其他因子）</span>}
+        {others.map((o) => {
+          const on = deps.includes(o);
+          return (
+            <button
+              key={o}
+              type="button"
+              onClick={() => toggleDep(o)}
+              className={`rounded-md border px-1.5 py-0.5 text-[11px] transition ${
+                on
+                  ? "border-accent/40 bg-accent/12 text-accent-soft"
+                  : "border-ink-600 text-slate-500 hover:text-slate-300"
+              }`}
+            >
+              {o}
+            </button>
+          );
+        })}
+      </div>
+      <div className="mt-2 flex items-center gap-2">
+        <span className="text-[11px] text-slate-600">关键词：</span>
+        <input
+          className="input flex-1 py-1 text-[12px]"
+          value={kws}
+          placeholder="扣款, 退款（留空则按依赖取邻域）"
+          onChange={(e) =>
+            onChange({
+              scope: {
+                ...(spec.scope || {}),
+                keywords: e.target.value
+                  .split(/[,，\s]+/)
+                  .map((s) => s.trim())
+                  .filter(Boolean),
+              },
+            })
+          }
+        />
+        <span className="text-[11px] text-slate-600">跳数</span>
+        <input
+          className="input w-[52px] py-1 text-[12px]"
+          type="number"
+          min={1}
+          max={3}
+          value={spec.scope?.depth ?? defaultDepth}
+          onChange={(e) =>
+            onChange({ scope: { ...(spec.scope || {}), depth: Number(e.target.value) || 1 } })
+          }
+        />
+      </div>
     </div>
   );
 }

@@ -5,8 +5,7 @@ import { compact } from "../lib/format";
 
 const NAV = [
   { to: "/", label: "总览", hint: "平台脉搏", icon: "M3 12h4l3 8 4-16 3 8h4" },
-  { to: "/workbench", label: "决策工作台", hint: "单条决策", icon: "M4 6h16M4 12h10M4 18h14" },
-  { to: "/ontology", label: "本体与链路", hint: "汇聚·本体·链式", icon: "M12 3v4M12 17v4M3 12h4M17 12h4M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3" },
+  { to: "/workbench", label: "决策工作台", hint: "汇聚·本体·链式·结论", icon: "M4 6h16M4 12h10M4 18h14" },
   { to: "/blueprints", label: "蓝图库", hint: "决策模板", icon: "M4 6h16M4 12h16M4 18h10" },
   { to: "/batch", label: "批量决策", hint: "吞吐与导出", icon: "M3 5h18v6H3zM3 13h18v6H3z" },
   { to: "/ledger", label: "决策账本", hint: "审计与反馈", icon: "M6 3h9l5 5v13H6zM14 3v6h6" },
