@@ -9,6 +9,7 @@ import Batch from "./pages/Batch";
 import Ledger from "./pages/Ledger";
 import Calibration from "./pages/Calibration";
 import Methodology from "./pages/Methodology";
+import Ontology from "./pages/Ontology";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
           <Route path="/workbench" element={<Workbench />} />
           <Route path="/workbench/:bpId" element={<Workbench />} />
           <Route path="/blueprints" element={<Blueprints />} />
+          <Route path="/ontology" element={<Ontology />} />
           <Route path="/batch" element={<Batch />} />
           <Route path="/batch/:bpId" element={<Batch />} />
           <Route path="/ledger" element={<Ledger />} />

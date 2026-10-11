@@ -35,12 +35,13 @@ export default function Dashboard() {
           <div className="max-w-2xl">
             <div className="section-title mb-2">多语言通用决策平台</div>
             <h2 className="text-[22px] font-semibold leading-snug tracking-tight text-slate-50">
-              把任何判断，原子化成一次前向传播。
+              任何东西，都可以是一次决策。
             </h2>
             <p className="mt-2.5 text-[13.5px] leading-relaxed text-slate-400">
-              Decidra 不生成文本、不做检索、不搭本体。它接收一个<strong className="text-slate-200">状态</strong>
-              和一组<strong className="text-slate-200">类型化问题</strong>，在单次前向里给出带概率的答案，
-              再由置信门控决定「自动执行」还是「升级人工」。100+ 语言、约 30 ms、可审计、可标定。
+              Anything is Decision 不生成文本、不做检索。它汇聚你的数据、自动摊成一张
+              <strong className="text-slate-200">本体图</strong>，让每个<strong className="text-slate-200">决策因子</strong>
+              裁一块自己的子本体，在单次前向里给出带概率的答案，再由置信门控决定
+              「自动执行」还是「升级人工」。100+ 语言、约 30 ms、可审计、可标定。
             </p>
           </div>
           <div className="flex flex-wrap gap-2">

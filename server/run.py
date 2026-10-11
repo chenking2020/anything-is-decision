@@ -12,16 +12,16 @@ sys.path.insert(0, str(ROOT))
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Decidra 决策平台后端")
-    parser.add_argument("--host", default=os.environ.get("DECIDRA_HOST", "127.0.0.1"))
-    parser.add_argument("--port", type=int, default=int(os.environ.get("DECIDRA_PORT", "8000")))
+    parser = argparse.ArgumentParser(description="Anything is Decision 决策平台后端")
+    parser.add_argument("--host", default=os.environ.get("AID_HOST", "127.0.0.1"))
+    parser.add_argument("--port", type=int, default=int(os.environ.get("AID_PORT", "8000")))
     parser.add_argument("--device", default=os.environ.get("LAYA_DEVICE", "auto"))
     parser.add_argument("--reload", action="store_true")
     parser.add_argument("--no-preload", action="store_true")
     args = parser.parse_args()
 
     os.environ["LAYA_DEVICE"] = args.device
-    os.environ["DECIDRA_PRELOAD"] = "0" if args.no_preload else "1"
+    os.environ["AID_PRELOAD"] = "0" if args.no_preload else "1"
 
     import uvicorn
 

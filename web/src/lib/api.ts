@@ -1,12 +1,15 @@
 import type {
   Blueprint,
   CalRow,
+  ChainPlan,
+  ChainResult,
   DecideResult,
   EngineInfo,
   FitEntry,
   LedgerRow,
   LedgerStats,
   MetricsBundle,
+  OntologyGraph,
   QuestionSpec,
   Settings,
   SweepPoint,
@@ -81,6 +84,42 @@ export const api = {
       "/api/ingest/parse",
       payload
     ),
+
+  // ── 本体与链式决策 ──
+  chainDemo: () =>
+    request<{ state: any; questions: Record<string, QuestionSpec>; policy: any; max_steps: number }>(
+      "/api/chain/demo"
+    ),
+  buildOntology: (payload: {
+    state?: unknown;
+    sources?: { id?: string; text?: string; data?: any }[];
+    top_concepts?: number;
+  }) =>
+    post<{
+      graph: OntologyGraph;
+      stats: { nodes: number; edges: number; by_type: Record<string, number>; by_rel: Record<string, number> };
+      bundle: { docs: { id: string; text: string }[]; attributes: { key: string; value: string }[] };
+      rendered: string;
+    }>("/api/ontology/build", payload),
+
+  chainPlan: (questions: Record<string, QuestionSpec>) => post<ChainPlan>("/api/chain/plan", { questions }),
+
+  decideChain: (payload: {
+    state?: unknown;
+    sources?: { id?: string; text?: string; data?: any }[];
+    questions: Record<string, QuestionSpec>;
+    policy?: any;
+    max_len?: number;
+    max_steps?: number;
+    depth?: number;
+    limit?: number;
+    top_concepts?: number;
+    include_state_text?: boolean;
+    blueprint_id?: string;
+    blueprint_name?: string;
+    domain?: string;
+    record?: boolean;
+  }) => post<ChainResult>("/api/decide/chain", payload),
 
   blueprints: (domain?: string) =>
     request<{ items: Blueprint[]; domains: string[]; count: number }>(

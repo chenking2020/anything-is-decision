@@ -6,6 +6,7 @@ import { compact } from "../lib/format";
 const NAV = [
   { to: "/", label: "总览", hint: "平台脉搏", icon: "M3 12h4l3 8 4-16 3 8h4" },
   { to: "/workbench", label: "决策工作台", hint: "单条决策", icon: "M4 6h16M4 12h10M4 18h14" },
+  { to: "/ontology", label: "本体与链路", hint: "汇聚·本体·链式", icon: "M12 3v4M12 17v4M3 12h4M17 12h4M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3" },
   { to: "/blueprints", label: "蓝图库", hint: "决策模板", icon: "M4 6h16M4 12h16M4 18h10" },
   { to: "/batch", label: "批量决策", hint: "吞吐与导出", icon: "M3 5h18v6H3zM3 13h18v6H3z" },
   { to: "/ledger", label: "决策账本", hint: "审计与反馈", icon: "M6 3h9l5 5v13H6zM14 3v6h6" },
@@ -37,7 +38,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </svg>
           </div>
           <div>
-            <div className="text-[14px] font-semibold tracking-tight text-slate-50">Decidra</div>
+            <div className="text-[14px] font-semibold tracking-tight text-slate-50">Anything is Decision</div>
             <div className="text-[10px] uppercase tracking-[0.16em] text-slate-500">多语言决策平台</div>
           </div>
         </div>
@@ -98,7 +99,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <header className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-ink-600 bg-ink-950/80 px-5 py-3 backdrop-blur">
           <div className="flex items-baseline gap-3">
             <h1 className="text-[15px] font-semibold tracking-tight text-slate-50">
-              {NAV.find((n) => n.to === loc.pathname)?.label ?? "Decidra"}
+              {NAV.find((n) => n.to === loc.pathname)?.label ?? "Anything is Decision"}
             </h1>
             <span className="hidden text-[12px] text-slate-500 sm:inline">
               {NAV.find((n) => n.to === loc.pathname)?.hint}
@@ -132,7 +133,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <main className="scroll-thin min-w-0 flex-1 overflow-x-hidden px-5 py-6">{children}</main>
 
         <footer className="border-t border-ink-600 px-5 py-3 text-[11px] text-slate-600">
-          Decidra · 概率是决策的输入，不是结论。所有自动执行都必须由阈值与人工复核共同承担。
+          Anything is Decision · 概率是决策的输入，不是结论。所有自动执行都必须由阈值与人工复核共同承担。
         </footer>
       </div>
     </div>

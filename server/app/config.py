@@ -19,18 +19,18 @@ ENCODER_DIR: Path = WEIGHTS_DIR / "encoder"
 TOKENIZER_DIR: Path = WEIGHTS_DIR / "tokenizer"
 RL_CONFIG_PATH: Path = WEIGHTS_DIR / "rl_agent_config.json"
 
-DATA_DIR: Path = Path(os.environ.get("DECIDRA_DATA_DIR", str(ROOT / "server" / "data")))
+DATA_DIR: Path = Path(os.environ.get("AID_DATA_DIR", str(ROOT / "server" / "data")))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-DB_PATH: Path = DATA_DIR / "decidra.db"
+DB_PATH: Path = DATA_DIR / "anything-is-decision.db"
 
 DEVICE: str = os.environ.get("LAYA_DEVICE", "auto")
 MAX_LEN: int = int(os.environ.get("LAYA_MAX_LEN", "1024"))
-DEFAULT_THRESHOLD: float = float(os.environ.get("DECIDRA_THRESHOLD", "0.60"))
-BATCH_SIZE: int = int(os.environ.get("DECIDRA_BATCH_SIZE", "16"))
+DEFAULT_THRESHOLD: float = float(os.environ.get("AID_THRESHOLD", "0.60"))
+BATCH_SIZE: int = int(os.environ.get("AID_BATCH_SIZE", "16"))
 
 CHECKPOINT_NAME = "laya-multilingual"
 CHECKPOINT_REPO = "convaiinnovations/laya-multilingual"
 
-PLATFORM_NAME = "Decidra"
+PLATFORM_NAME = "Anything is Decision"
 PLATFORM_TAGLINE = "多语言通用决策平台"

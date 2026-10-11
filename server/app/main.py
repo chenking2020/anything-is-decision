@@ -1,4 +1,4 @@
-"""Decidra · 多语言通用决策平台 —— FastAPI 应用入口。"""
+"""Anything is Decision · 多语言通用决策平台 —— FastAPI 应用入口。"""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ from fastapi.staticfiles import StaticFiles  # noqa: E402
 
 from . import store  # noqa: E402
 from .config import PLATFORM_NAME, PLATFORM_TAGLINE, ROOT  # noqa: E402
-from .routers import blueprints, calibration, decisions, ledger, meta  # noqa: F401,E402
+from .routers import blueprints, calibration, chain, decisions, ledger, meta  # noqa: F401,E402
 
 WEB_DIST = ROOT / "web" / "dist"
 
@@ -25,7 +25,7 @@ WEB_DIST = ROOT / "web" / "dist"
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     store.init_db()
-    if os.environ.get("DECIDRA_PRELOAD", "1") == "1":
+    if os.environ.get("AID_PRELOAD", "1") == "1":
         from . import engine as engine_mod
 
         def _warm() -> None:
@@ -57,7 +57,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-for r in (meta.router, decisions.router, blueprints.router, ledger.router, calibration.router):
+for r in (meta.router, decisions.router, chain.router, blueprints.router, ledger.router, calibration.router):
     app.include_router(r)
 
 

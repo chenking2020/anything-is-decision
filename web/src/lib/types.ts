@@ -5,6 +5,78 @@ export interface QuestionSpec {
   instructions: string;
   criteria?: Record<string, string> | string[];
   labels?: Record<string, string>;
+  /** 链式依赖：依赖哪些因子的结论（上游结论会被写成图上的节点） */
+  depends_on?: string[];
+  /** 动态子本体的作用域：只关心图上哪些类型 / 关键词，以及几跳邻域 */
+  scope?: { types?: string[]; keywords?: string[]; depth?: number };
+}
+
+export interface OntologyNode {
+  id: string;
+  type: "root" | "document" | "attribute" | "concept" | "conclusion";
+  label: string;
+  value: string;
+  weight: number;
+  step: number;
+  meta: Record<string, any>;
+}
+
+export interface OntologyEdge {
+  source: string;
+  target: string;
+  rel: "has" | "mentions" | "co_occurs" | "derives" | string;
+  weight: number;
+  step: number;
+}
+
+export interface OntologyGraph {
+  nodes: OntologyNode[];
+  edges: OntologyEdge[];
+}
+
+export interface ChainStep {
+  seq: number;
+  round: number;
+  layer: number;
+  key: string;
+  seeds: string[];
+  subgraph: OntologyGraph;
+  answer: {
+    value: string | number;
+    display: string;
+    type: QuestionType;
+    confidence: number;
+    gate: GateInfo;
+  };
+  changed: boolean;
+  state_text?: string;
+}
+
+export interface ChainResult {
+  answers: Record<string, AnswerItem>;
+  verdict: "act" | "review" | "escalate";
+  avg_confidence: number | null;
+  min_confidence: number | null;
+  threshold: number;
+  usage: { input_tokens?: number; output_tokens?: number };
+  elapsed_ms: number;
+  model: string;
+  graph: OntologyGraph;
+  layers: string[][];
+  steps: ChainStep[];
+  rounds: number;
+  converged: boolean;
+  chained: boolean;
+  unsettled: string[];
+  decision_id?: string | null;
+  plan?: ChainPlan;
+}
+
+export interface ChainPlan {
+  layers: string[][];
+  edges: { from: string; to: string }[];
+  error: string | null;
+  count?: number;
 }
 
 export interface Blueprint {

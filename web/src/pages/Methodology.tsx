@@ -7,71 +7,76 @@ import { Panel, SectionTitle } from "../components/ui";
 const STEPS = [
   {
     n: "01",
-    t: "状态（State）",
-    d: "任何载体：一段文本、一封邮件、一个工单、一个 JSON 对象。不需要先建模、先入湖、先对齐主键。",
+    t: "汇聚数据",
+    d: "多条来源——正文、画像、历史记录、交易流水——统一成文档集 + 属性表。不需要先入湖、先对齐主键。",
   },
   {
     n: "02",
-    t: "类型化问题（Typed Questions）",
-    d: "把判断拆成 choice / score / noul 三种原子。每个选项自带判据描述，答案空间在请求里定义，不需要重新训练。",
+    t: "构建本体",
+    d: "结构化字段变成属性节点，自然语言抽成概念节点，同句共现连成边。纯 Python 启发式，不调用 LLM。",
   },
   {
     n: "03",
-    t: "一次前向传播",
-    d: "所有问题共享同一个编码结果：1 个问题约 33 ms，批量约 7 ms/问。没有自回归，没有采样，没有解析。",
+    t: "因子分层",
+    d: "决策因子声明 depends_on，按依赖做拓扑分层；同层互不依赖，可以共享一次前向传播。",
   },
   {
     n: "04",
-    t: "概率而非文本",
-    d: "每个答案都带着完整的概率分布。严格适当评分规则（RLCD）训练让概率具备统计意义，而不只是一个排序。",
+    t: "动态子本体",
+    d: "每个因子按自己的 scope（类型 / 关键词 / 跳数）从全图裁一块 k 跳邻域——同一份数据，不同因子读不同的图。",
   },
   {
     n: "05",
-    t: "门控（Gating）",
-    d: "置信度达到阈值 → 自动执行；否则 → 升级人工。阈值是可计算的策略，不是拍脑袋的常数。",
+    t: "链式推进",
+    d: "上游结论被写成图上的结论节点，下游裁子图时自然读到它。依赖不是参数传递，而是图上多出来的那个节点。",
+  },
+  {
+    n: "06",
+    t: "多步迭代",
+    d: "重复以上几步若干轮，直到取值稳定或达到 max_steps。每一步都留下轨迹：读了哪块子图、置信多少、怎么裁决。",
   },
 ];
 
-const COMPARE: { dim: string; palantir: string; decidra: string }[] = [
+const COMPARE: { dim: string; palantir: string; aid: string }[] = [
   {
     dim: "核心抽象",
     palantir: "本体（Ontology）：先把组织的数据、对象、关系建模成一个世界模型",
-    decidra: "决策原子（Decision Atom）：把一次判断拆成带类型的问题集，直接问在原始状态上",
+    aid: "决策因子（Decision Factor）：把一次判断拆成带类型的问题集，每个因子从本体图上裁一块自己的子图",
   },
   {
     dim: "前置成本",
     palantir: "需要先完成数据接入、实体对齐、本体建模，决策能力在底座建成之后才出现",
-    decidra: "零前置：给一段状态 + 一组问题，第一次调用就能产出决策",
+    aid: "零前置：给一批数据 + 一组因子，第一次调用就能产出决策；本体是执行时现构的，用完即弃",
   },
   {
     dim: "答案形态",
     palantir: "查询结果、图谱路径、以及越来越多的生成式文本结论",
-    decidra: "类型化取值 + 完整概率分布 + 集中度 + 门控裁决，结构化、可比较、可阈值化",
+    aid: "类型化取值 + 完整概率分布 + 集中度 + 门控裁决，结构化、可比较、可阈值化",
   },
   {
     dim: "时延",
     palantir: "面向分析与工作流，秒级到分钟级；LLM 环节更慢",
-    decidra: "单次前向：1 问约 33 ms，批量约 7 ms/问，适合放在请求的关键路径上",
+    aid: "单因子一次前向约 30 ms，批量约 7 ms/问；链路开销 = 轮数 × 层数 × 一次前向，按需打开",
   },
   {
     dim: "不确定性",
     palantir: "主要由人来把握，系统给出的是结果与解释",
-    decidra: "不确定性是一等公民：概率被标定、被绘制成曲线、被阈值化成策略",
+    aid: "不确定性是一等公民：概率被标定、被绘制成曲线、被阈值化成策略",
   },
   {
     dim: "失败模式",
     palantir: "本体建错、数据滞后 → 结论系统性偏移，且往往无声",
-    decidra: "分布过于平坦 → 置信度低 → 自动升级人工，失败被显式暴露",
+    aid: "分布过于平坦 → 置信度低 → 自动升级人工，失败被显式暴露",
   },
   {
     dim: "语言",
     palantir: "以英文生态为主",
-    decidra: "100+ 语言同一套问题、同一个检查点，多语言才是主战场",
+    aid: "100+ 语言同一套问题、同一个检查点，多语言才是主战场",
   },
   {
     dim: "成本结构",
     palantir: "平台 + 实施 + 持续的数据工程",
-    decidra: "3 亿参数的开源权重，单机自托管，边际成本趋近于零",
+    aid: "3 亿参数的开源权重，单机自托管，边际成本趋近于零",
   },
 ];
 
@@ -92,21 +97,22 @@ export default function Methodology() {
       <Panel className="p-6">
         <div className="section-title mb-2">方法论</div>
         <h2 className="text-[22px] font-semibold leading-snug tracking-tight text-slate-50">
-          不是先造一个世界模型，再在里面查询；
+          先汇聚数据、自动摊成一张本体图；
           <br />
-          而是把每一次判断本身，变成可计算、可标定、可门控的对象。
+          每个决策因子再裁一块自己的子本体，链式推进、多步收敛。
         </h2>
         <p className="mt-3 max-w-3xl text-[13.5px] leading-relaxed text-slate-400">
-          Palantir 的路径是<strong className="text-slate-200">本体驱动</strong>：把组织的数据整合成一个世界模型，
-          再在这个模型上做分析与行动。它回答的是「世界是什么样的」。
-          Decidra 的路径是<strong className="text-slate-200">决策驱动</strong>：不去重建世界，
-          而是承认世界只会以「状态」的形式抵达，然后直接在状态上问出类型化的问题，
-          拿回带概率的答案，用门控决定要不要自动执行。它回答的是「此刻该做什么，以及我有多确定」。
+          Palantir 的路径是<strong className="text-slate-200">先建本体</strong>：把组织的数据整合成一个世界模型，
+          再在这个模型上做分析与行动——本体是长期资产，也是长期负债。
+          Anything is Decision 走的是<strong className="text-slate-200">本体 + 决策</strong>：
+          本体不预先建模，而是在每次执行时从汇聚来的原始材料里<strong className="text-slate-200">现构</strong>一张图，
+          每个决策因子按自己的 scope 裁一块动态子图来读，判完的结论又写回图上给下游因子用。
+          它回答的是「此刻该做什么，以及我有多确定」。
         </p>
       </Panel>
 
-      {/* 五步 */}
-      <div className="grid gap-3 md:grid-cols-5">
+      {/* 六步 */}
+      <div className="grid gap-3 md:grid-cols-3">
         {STEPS.map((s) => (
           <Panel key={s.n} className="panel-pad">
             <div className="num text-[13px] text-accent-soft">{s.n}</div>
@@ -125,7 +131,7 @@ export default function Methodology() {
               <tr className="text-left text-[11px] uppercase tracking-wider text-slate-500">
                 <th className="w-[110px] py-2 font-medium">维度</th>
                 <th className="py-2 font-medium">Palantir（本体驱动）</th>
-                <th className="py-2 font-medium">Decidra（决策驱动）</th>
+                <th className="py-2 font-medium">Anything is Decision（本体 + 决策）</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-ink-600">
@@ -133,7 +139,7 @@ export default function Methodology() {
                 <tr key={c.dim} className="align-top">
                   <td className="py-3 pr-3 text-[12.5px] font-medium text-slate-300">{c.dim}</td>
                   <td className="py-3 pr-4 leading-relaxed text-slate-500">{c.palantir}</td>
-                  <td className="py-3 leading-relaxed text-slate-300">{c.decidra}</td>
+                  <td className="py-3 leading-relaxed text-slate-300">{c.aid}</td>
                 </tr>
               ))}
             </tbody>
@@ -141,7 +147,7 @@ export default function Methodology() {
         </div>
         <div className="mt-3 text-[11.5px] leading-relaxed text-slate-600">
           二者并不互斥：本体擅长回答「是什么」，决策引擎擅长回答「此刻怎么做」。
-          真正的生产系统里，Decidra 通常站在最前面——用 30 ms 决定这条输入该走哪条路、要不要交给更贵更慢的系统。
+          真正的生产系统里，Anything is Decision 通常站在最前面——用几十毫秒决定这条输入该走哪条路、要不要交给更贵更慢的系统。
         </div>
       </Panel>
 

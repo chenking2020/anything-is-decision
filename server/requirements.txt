@@ -1,4 +1,4 @@
-# Decidra · 通用决策平台 —— 后端依赖
+# Anything is Decision · 通用决策平台 —— 后端依赖
 # Python >= 3.10（laya 要求 3.10+）
 fastapi>=0.110
 uvicorn[standard]>=0.27
